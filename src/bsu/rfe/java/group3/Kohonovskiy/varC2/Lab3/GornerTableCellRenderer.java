@@ -19,11 +19,15 @@ import javax.swing.table.TableCellRenderer;
  */
 public class GornerTableCellRenderer implements TableCellRenderer {
 
+    private final double EPS = 10E-6;
+
     private JPanel panel = new JPanel();
     private JLabel label = new JLabel();
     // Ищем ячейки, строковое представление которых совпадает с needle
-    // (иголкой). Применяется аналогия поиска иголки в стоге сена, в роли // стога сена - таблица
+    // (иголкой). Применяется аналогия поиска иголки в стоге сена, в роли
+    // стога сена - таблица
     private String needle = null;
+    private boolean primeSelect = false;
 
     private DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
 
@@ -48,6 +52,16 @@ public class GornerTableCellRenderer implements TableCellRenderer {
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+
+        // ровняем в зависимости от контента
+        if ((Double) value < 0)
+             panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        else if ((Double) value > 0)
+             panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        else
+             panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+
         // Преобразовать double в строку с помощью форматировщика
         String formattedDouble = formatter.format(value);
         // Установить текст надписи равным строковому представлению числа
@@ -62,10 +76,39 @@ public class GornerTableCellRenderer implements TableCellRenderer {
             // Иначе - в обычный белый
             panel.setBackground(Color.WHITE);
         }
+
+
+        // если включен режим поиска простых чисел
+        if (primeSelect) {
+            double n = (Double)value;
+            if (Math.abs(n - Math.round(n)) - 0.1 < EPS) {
+                if (isPrime((Math.round(n)))) {
+                    panel.setBackground(Color.CYAN);
+                }
+            }
+        }
+
         return panel;
+    }
+
+
+    // проверка числа на простоту
+    private boolean isPrime(long n) {
+        if (n <= 0) return false;
+        if (n <= 2) return true;
+        for (int i = 2; i * i <= n; ++i) {
+            if (n % i == 0) return false;
+        }
+        return true;
+    }
+
+    public void setPrimeFind(boolean v){
+        primeSelect = v;
     }
 
     public void setNeedle(String needle) {
         this.needle = needle;
     }
+
+
 }

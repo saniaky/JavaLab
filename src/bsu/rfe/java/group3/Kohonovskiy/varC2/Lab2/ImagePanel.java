@@ -1,7 +1,6 @@
 package bsu.rfe.java.group3.Kohonovskiy.varC2.Lab2;
 
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import java.awt.image.BufferedImage;

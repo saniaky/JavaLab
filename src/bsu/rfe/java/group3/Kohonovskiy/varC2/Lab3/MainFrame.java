@@ -1,7 +1,6 @@
 package bsu.rfe.java.group3.Kohonovskiy.varC2.Lab3;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -11,22 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,7 +36,10 @@ public class MainFrame extends JFrame {
     // Элементы меню вынесены в поля данных класса, так как ими необходимо // манипулировать из разных мест
     private JMenuItem saveToTextMenuItem;
     private JMenuItem saveToGraphicsMenuItem;
+    private JMenuItem saveToCSVFileMenuItem;
     private JMenuItem searchValueMenuItem;
+    private JCheckBoxMenuItem searchPrimeMenuItem;
+    private JMenuItem aboutMenuItem;
 
     // Поля ввода для считывания значений переменных
     private JTextField textFieldFrom;
@@ -91,6 +78,8 @@ public class MainFrame extends JFrame {
         JMenu tableMenu = new JMenu("Таблица");
         // Добавить его в главное меню
         menuBar.add(tableMenu);
+        JMenu aboutMenu = new JMenu("Справка");
+        menuBar.add(aboutMenu);
 
         // Создать новое "действие" по сохранению в текстовый файл
         Action saveToTextAction = new AbstractAction("Сохранить в текстовый файл") {
@@ -99,7 +88,7 @@ public class MainFrame extends JFrame {
                     // Если экземпляр диалогового окна "Открыть файл " ещѐ не создан,
                     // то создать его
                     fileChooser = new JFileChooser();
-                    // и инициализировать текущей директорией
+                    // и инициализировать текущей директорией                       rez
                     fileChooser.setCurrentDirectory(new File("."));
                 }
                 // Показать диалоговое окно
@@ -139,6 +128,24 @@ public class MainFrame extends JFrame {
         // По умолчанию пункт меню является недоступным(данных ещѐ нет)
         saveToGraphicsMenuItem.setEnabled(false);
 
+        Action saveToCSVFileAction = new AbstractAction("Сохранить в CSV") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (fileChooser == null) {
+                    fileChooser = new JFileChooser();
+                    fileChooser.setCurrentDirectory(new File("."));
+                }
+
+                if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION)
+                    saveToCSVFile(fileChooser.getSelectedFile());
+            }
+        };
+
+        saveToCSVFileMenuItem = fileMenu.add(saveToCSVFileAction);
+        saveToCSVFileMenuItem.setEnabled(false);
+
+
+
         // Создать новое действие по поиску значений многочлена
         Action searchValueAction = new AbstractAction("Найти значение многочлена") {
             public void actionPerformed(ActionEvent event) {
@@ -156,8 +163,34 @@ public class MainFrame extends JFrame {
         // Добавить действие в меню "Таблица"
         searchValueMenuItem = tableMenu.add(searchValueAction);
         // По умолчанию пункт меню является недоступным (данных ещѐ нет)
-
         searchValueMenuItem.setEnabled(false);
+
+
+        Action findPrimeAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    renderer.setPrimeFind(searchPrimeMenuItem.isSelected());
+                    getContentPane().repaint();
+            }
+        };
+
+        searchPrimeMenuItem = new JCheckBoxMenuItem("Найти простые числа");
+        searchPrimeMenuItem.addActionListener(findPrimeAction);
+        tableMenu.add(searchPrimeMenuItem);
+        searchPrimeMenuItem.setSelected(false);
+        searchPrimeMenuItem.setEnabled(false);
+
+
+        Action aboutMenuAction = new AbstractAction("О программе") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(MainFrame.this, "Copyrights, All rights reserved ©\nKokhonovskiy Alexander", "About", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(getClass().getResource("about.jpg")));
+            }
+        };
+
+        // Добавить действие в меню "Справка"
+        aboutMenuItem = aboutMenu.add(aboutMenuAction);
+
 
         // Создать область с полями ввода для границ отрезка и шага
         // Создать подпись для ввода левой границы отрезка
@@ -187,7 +220,6 @@ public class MainFrame extends JFrame {
         // Создать контейнер 1 типа "коробка с горизонтальной укладкой"
         Box hboxRange = Box.createHorizontalBox();
         // Задать для контейнера тип рамки "объѐмная"
-        hboxRange.setBorder(BorderFactory.createBevelBorder(1));
         // Добавить "клей" C1-H1
         hboxRange.add(Box.createHorizontalGlue());
         // Добавить подпись "От"
@@ -251,7 +283,9 @@ public class MainFrame extends JFrame {
                     // Пометить ряд элементов меню как доступных
                     saveToTextMenuItem.setEnabled(true);
                     saveToGraphicsMenuItem.setEnabled(true);
+                    saveToCSVFileMenuItem.setEnabled(true);
                     searchValueMenuItem.setEnabled(true);
+                    searchPrimeMenuItem.setEnabled(true);
                 } catch (NumberFormatException ex) {
                     // В случае ошибки преобразования чисел показать сообщение об ошибке
                     JOptionPane.showMessageDialog(MainFrame.this, "Ошибка в формате записи числа с плавающей точкой", "Ошибочный формат числа",
@@ -284,7 +318,6 @@ public class MainFrame extends JFrame {
 
         // Поместить созданные кнопки в контейнер
         Box hboxButtons = Box.createHorizontalBox();
-        hboxButtons.setBorder(BorderFactory.createBevelBorder(1));
         hboxButtons.add(Box.createHorizontalGlue());
         hboxButtons.add(buttonCalc);
         hboxButtons.add(Box.createHorizontalStrut(30));
@@ -350,6 +383,23 @@ public class MainFrame extends JFrame {
         }
     }
 
+    protected void saveToCSVFile(File selectedFile) {
+        try {
+            // Создать новый символьный поток вывода, направленный в указанный файл
+            PrintStream out = new PrintStream(selectedFile);
+
+            for (int i = 0; i < data.getRowCount(); i++) {
+                out.println(data.getValueAt(i, 0) + ";" + data.getValueAt(i, 1));
+            }
+            out.close();
+        } catch (FileNotFoundException e) {
+            // Исключительную ситуацию "ФайлНеНайден" можно не
+            // обрабатывать, так как мы файл создаѐм, а не открываем
+        }
+    }
+
+
+
     public static void main(String[] args) {
         // Если не задано ни одного аргумента командной строки -
         // Продолжать вычисления невозможно, коэффиценты неизвестны
@@ -378,4 +428,5 @@ public class MainFrame extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+
 }

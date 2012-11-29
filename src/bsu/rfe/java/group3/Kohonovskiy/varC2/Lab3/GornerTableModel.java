@@ -39,7 +39,7 @@ public class GornerTableModel extends AbstractTableModel {
 
     public int getColumnCount() {
         // В данной модели два столбца
-        return 2;
+        return 4;
     }
 
     public int getRowCount() {
@@ -54,14 +54,26 @@ public class GornerTableModel extends AbstractTableModel {
         if (col == 0) {
             // Если запрашивается значение 1-го столбца, то это X
             return x;
-        } else {
-            // Если запрашивается значение 2-го столбца, то это значение
-            // многочлена
+        } else if (col == 1) {
+            // Если запрашивается значение 2-го столбца, то это значение многочлена
             Double result = 0.0;
             // Вычисление значения в точке по схеме Горнера.
-            // Вспомнить 1-ый курс и реализовать
-            // ...
+            for (int i = coefficients.length; i > 0; --i) {
+                result = coefficients[i-1] + result * x;
+            }
             return result;
+        } else if (col == 2) {
+            // Если запрашивается значение 3-го столбца, то это
+            // значение многочлена вычисленное с помощью функции возведения в степень Math.pow()
+            Double result = 0.0;
+            for (int i = coefficients.length - 1; i >= 0; --i) {
+                result += coefficients[i] * Math.pow(x, i);
+            }
+            return result;
+        } else {
+            // Если запрашивается значение 4-го столбца, то это
+            // разница между значениями второго и третьего столбцов.
+            return (Double)getValueAt(row, 1) - (Double)getValueAt(row, 2);
         }
     }
 
@@ -70,58 +82,19 @@ public class GornerTableModel extends AbstractTableModel {
             case 0:
                 // Название 1-го столбца
                 return "Значение X";
-            default:
+            case 1:
                 // Название 2-го столбца
                 return "Значение многочлена";
+            case 2:
+                return "Значение многочлена (Math.pow())";
+            case 3:
+                return "delta X";
+            default:
+                return "---";
         }
     }
 
     public Class<?> getColumnClass(int col) {
-        // И в 1-ом и во 2-ом столбце находятся значения типа Double
         return Double.class;
     }
 }
-
-/*
-// 2.2 Вложенные циклы. Схема Горнера
-#include <stdio.h>
-#include <math.h>
-
-int main( void )
-{
-	int n;
-	int i, j;
-	double x, sum = 0, temp;
-
-	scanf("%d", &n);
-
-	for( i = 0; i <= 10; i++ )
-	{
-		x = 0.4 * i;
-		for( j = n, t = 0; j >= 1; j-- )
-		{
-			sum += pow(-1, j) * j * pow(x, j);
-			t += j + 1;
-		}
-		printf("x[%d] = %.3lf, summa = %.3lf, %d\n", i, x, sum, t);
-		sum = 0;
-	}
-
-	puts("----------------------------");
-
-	temp = pow(-1, n) * n;
-	for( i = 0; i <= 10; i++ )
-	{
-		x = 0.4 * i;
-		sum = temp;
-		for( j = n-1, t = 0; j >= 0; j-- )
-		{
-			sum = pow(-1, j) * j + x * sum;
-			t += 2;
-		}
-		printf("x[%d] = %.3lf, summa = %.3lf, %d\n", i, x, sum, t);
-	}
-
-    return 0;
-}
-*/

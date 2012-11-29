@@ -3,7 +3,6 @@ package bsu.rfe.java.group3.Kohonovskiy.varC2.Lab2;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.JPanel;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,8 +35,8 @@ public class MainFrame extends JFrame {
     private Box hboxFormulaType = Box.createHorizontalBox();
 
     private int formulaId = 1;
-    String formulaPath = "D:\\JavaLab\\src\\bsu\\rfe\\java\\group3\\Kohonovskiy\\varC2\\Lab2\\formula";
-    ImagePanel formula = new ImagePanel(formulaPath + "1.bmp");
+    String formulaPath = "/Users/saniaky/Dropbox/JavaLab/src/bsu/rfe/java/group3/Kohonovskiy/varC2/Lab2/formula";
+    ImagePanel formula = new ImagePanel(formulaPath + "1.gif");
 
 
     Double mem1 = 0.0, mem2 = 0.0, mem3 = 0.0;
@@ -67,7 +66,7 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent ev) {
                 MainFrame.this.formulaId = formulaId;
-                formula.updateImage(formulaPath + formulaId + ".bmp");
+                formula.updateImage(formulaPath + formulaId + ".gif");
             }
         });
         radioButtons.add(button);
